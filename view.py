@@ -3,8 +3,33 @@ from app import app
 from time import time, asctime
 from flask import render_template, request
 import pymongo
+from forms import CitizenForm
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["citizens_database"]
+citizen_data = {'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
+                             'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
+                             'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
+                             'pers_data_agreement': '', 'photo_agreement': ''}
+
+
+@app.route('/create', methods=['POST', 'GET'])
+def citizen_create():
+    if request.method == 'POST':
+        citizen_data['fio'] = request.form['fio']
+        citizen_data['phone'] = request.form['phone']
+        citizen_data['birth'] = request.form['birth']
+
+        # 'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
+        #                 'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
+        #                 'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
+        #                 'pers_data_agreement': '', 'photo_agreement': ''}
+        with open('log.txt', 'a') as f:
+            f.write(f'{citizen_data}' + '\n')
+
+
+    form = CitizenForm()
+    return render_template('citizen_create.html', form=form)
+
 
 @app.route('/name_search')
 def name_search():
