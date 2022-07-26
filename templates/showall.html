@@ -4,7 +4,9 @@
 
     {% for el in cit %}
 
-      <p> {{ el }} </p>
+      <p>
+          ФИО: <a href="{{url_for('cit_detail', id=el['_id'])}}">{{ el['fio'] }}</a>, Дата рождения: {{ el['birth'] }}.
+      </p>
 
 
 

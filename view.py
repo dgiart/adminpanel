@@ -1,16 +1,23 @@
 from app import app
 #13.45
 from time import time, asctime
-from flask import render_template, request
+from bson.objectid import ObjectId
+from flask import render_template, request, redirect, url_for
 import pymongo
 from forms import CitizenForm
+from datetime import datetime
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["citizens_database"]
 citizen_data = {'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
                              'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
                              'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
                              'pers_data_agreement': '', 'photo_agreement': ''}
-
+def write_to_base(citizenDataToDb):
+    mycol = mydb["people"]
+    try:
+        mycol.insert_one(citizenDataToDb)
+    except:
+        pass
 
 @app.route('/create', methods=['POST', 'GET'])
 def citizen_create():
@@ -18,6 +25,9 @@ def citizen_create():
         citizen_data['fio'] = request.form['fio']
         citizen_data['phone'] = request.form['phone']
         citizen_data['birth'] = request.form['birth']
+        birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
+        bith_year = birth_date.year
+        citizen_data['birth_year'] = bith_year
 
         # 'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
         #                 'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
@@ -25,11 +35,19 @@ def citizen_create():
         #                 'pers_data_agreement': '', 'photo_agreement': ''}
         with open('log.txt', 'a') as f:
             f.write(f'{citizen_data}' + '\n')
+        # try:
+        #     pass
+        write_to_base(citizen_data)
+        return redirect(url_for('showall'))
 
 
     form = CitizenForm()
     return render_template('citizen_create.html', form=form)
 
+
+@app.route('/edit', methods=['POST', 'GET'])
+def citizen_edit():
+    pass
 
 @app.route('/name_search')
 def name_search():
@@ -98,6 +116,37 @@ def index():
 @app.route('/bot')
 def bot():
     return 'hi from bot!!!'
+
+@app.route('/<id>' )
+def cit_detail(id):
+    cits = mydb.people
+    cit = cits.find_one({'_id': ObjectId(id)})
+    # with open('log.txt', 'a') as f:
+    #     f.write(id)
+
+    text_to_send = f"1. ФИО: {cit['fio']}\n" \
+                   f"2. Телефон: {cit['phone']}\n" \
+                   f"3. Датa рождения: {cit['birth']}\n" \
+                   f"4. Адрес: {cit['addr']}\n" \
+                   f"5. Число проживающих: {cit['people_num']}\n" \
+                   f"6. ФИО и возраст проживающих: {cit['people_fio']}\n" \
+                   f"7. Есть ли среди проживающих инвалиды? {cit['invalids']}\n" \
+                   f"8. Наличие детей: {cit['children']}\n" \
+                   f"9. Возраст детей: {cit['children_age']}\n" \
+                   f"10. Небходимость продуктов питания: {cit['food']}\n" \
+                   f"11. Воды: {cit['water']}\n" \
+                   f"12. Лекарств: {cit['drugs']}\n" \
+                   f"13. Kоличество: {cit['products_detail']}\n" \
+                   f"14. Средства личной гигиены: {cit['gigien']}\n" \
+                   f"15. Kоличество {cit['gigien_num']}\n" \
+                   f"16. Памперсы: {cit['pampers']}\n" \
+                   f"17. Особенности диеты и т.п.: {cit['diet']}\n" \
+                   f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
+                   f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
+    return render_template('cit_detail.html', pers_info=text_to_send)
+
+    pass
+
 @app.route('/showall')
 def showall():
     mycol = mydb["people"]
@@ -111,4 +160,5 @@ def showall():
         cit.append(pers)
     #
 
-    return render_template('showall.html', cit=cit)
+    return render_template('showall.html', cit=mycol.find())
+    # return render_template('showall.html', cit=cit)
