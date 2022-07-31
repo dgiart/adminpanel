@@ -1,23 +1,46 @@
 from app import app
-#13.45
+# 13.45
 from time import time, asctime
 from bson.objectid import ObjectId
 from flask import render_template, request, redirect, url_for
-import pymongo
+from flask import send_file
+# import pymongo
 from forms import CitizenForm
 from datetime import datetime
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-mydb = myclient["citizens_database"]
+from app import mydb
+from models import Cit
+from my_funcs import log
+import csv
 citizen_data = {'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
-                             'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
-                             'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
-                             'pers_data_agreement': '', 'photo_agreement': ''}
+                'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
+                'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
+                'pers_data_agreement': '', 'photo_agreement': ''}
+citizen_data_list = ['fio', 'phone', 'birth', 'addr', 'people_num', 'people_fio', 'invalids', 'children',
+                     'children_age', 'food', 'drugs', 'water', 'products_detail', 'gigien', 'gigien_num', 'pampers',
+                     'diet', 'pers_data_agreement', 'photo_agreement']
+
+
+
 def write_to_base(citizenDataToDb):
     mycol = mydb["people"]
     try:
-        mycol.insert_one(citizenDataToDb)
+        pers = mycol.insert_one(citizenDataToDb)
+        # pers.inserted_id
+        # with open('log.txt', 'a') as f:
+        #     f.write(str(pers.inserted_id))
+        return pers.inserted_id
     except:
         pass
+
+def write_to_csv(citizenDataToCSV):
+    citizen_info = ['fio', 'phone', 'birth', 'addr', 'people_num', 'people_fio',
+                    'invalids', 'children', 'children_age', 'food', 'drugs', 'water',
+                    'products_detail', 'gigien', 'gigien_num', 'pampers', 'diet',
+                    'pers_data_agreement', 'photo_agreement', 'birth_year', '_id']
+    with open('citizens.csv', 'a') as file:
+        writer = csv.DictWriter(file, fieldnames=citizen_info)
+        writer.writeheader()
+        writer.writerows(citizenDataToCSV)
 
 @app.route('/create', methods=['POST', 'GET'])
 def citizen_create():
@@ -33,22 +56,22 @@ def citizen_create():
         #                 'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
         #                 'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
         #                 'pers_data_agreement': '', 'photo_agreement': ''}
-        with open('log.txt', 'a') as f:
-            f.write(f'{citizen_data}' + '\n')
+        # with open('log.txt', 'a') as f:
+        #     f.write(f'{citizen_data}' + '\n')
         # try:
         #     pass
         write_to_base(citizen_data)
+        write_to_csv([citizen_data])
         return redirect(url_for('showall'))
-
 
     form = CitizenForm()
     return render_template('citizen_create.html', form=form)
 
-
-@app.route('/edit', methods=['POST', 'GET'])
-def citizen_edit():
-    pass
-
+@app.route('/download')
+def downloadFile ():
+    #For windows you need to use drive name [ex: F:/Example.pdf]
+    path = "citizens.csv"
+    return send_file(path, as_attachment=True)
 @app.route('/name_search')
 def name_search():
     q = request.args.get('q')
@@ -77,6 +100,7 @@ def name_search():
                        f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
                        f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
     return render_template('name_search.html', pers_info=text_to_send)
+
 
 @app.route('/birth_search')
 def birth_search():
@@ -113,11 +137,44 @@ def birth_search():
 def index():
     return render_template('index.html')
 
+
 @app.route('/bot')
 def bot():
     return 'hi from bot!!!'
 
-@app.route('/<id>' )
+
+@app.route('/<id_>/edit/', methods=['POST', 'GET'])
+def citizen_edit(id_):
+    cits = mydb.people
+    cit_ = cits.find_one({'_id': ObjectId(id_)})
+    cit = Cit(cit_['fio'], cit_['phone'], cit_['birth'])
+    if request.method == 'POST':
+        # form = CitizenForm(obj=cit)
+        form = CitizenForm(formdata=request.form, obj=cit)
+        cit.fio = request.form['fio']
+        cit.phone = request.form['phone']
+        cit.birth = request.form['birth']
+        birth_date = datetime.strptime(cit_['birth'], '%d.%m.%Y')
+        bith_year = birth_date.year
+        cit.birth_year = bith_year
+        citizen_data['fio'] = request.form['fio']
+        citizen_data['phone'] = request.form['phone']
+        citizen_data['birth'] = request.form['birth']
+        birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
+        # bith_year = birth_date.year
+        citizen_data['birth_year'] = bith_year
+
+        # with open('log.txt', 'a') as f:
+        #     f.write(str(cit.fio))
+        new_id = write_to_base(citizen_data)
+        new_cit = cits.find_one({'_id': ObjectId(new_id)})
+        form.populate_obj(cit)
+        return redirect(url_for('citizen_edit', id_=new_cit['_id']))
+    form = CitizenForm(obj=cit)
+    return render_template('citizen_edit.html', id_=id_, form=form)
+
+
+@app.route('/<id>')
 def cit_detail(id):
     cits = mydb.people
     cit = cits.find_one({'_id': ObjectId(id)})
@@ -143,9 +200,12 @@ def cit_detail(id):
                    f"17. Особенности диеты и т.п.: {cit['diet']}\n" \
                    f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
                    f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
-    return render_template('cit_detail.html', pers_info=text_to_send)
+    log(str(cit))
+    _id = ObjectId(cit['_id'])
+    return render_template('cit_detail.html', pers_info=text_to_send, _id=_id)
 
     pass
+
 
 @app.route('/showall')
 def showall():
