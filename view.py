@@ -142,6 +142,13 @@ def index():
 def bot():
     return 'hi from bot!!!'
 
+@app.route('/<id_>/delete/', methods=['POST', 'GET'])
+def citizen_delete(id_):
+    cits = mydb.people
+    cits.delete_one({'_id': ObjectId(id_)})
+    return redirect(url_for('showall'))
+
+
 
 @app.route('/<id_>/edit/', methods=['POST', 'GET'])
 def citizen_edit(id_):
@@ -169,6 +176,7 @@ def citizen_edit(id_):
         new_id = write_to_base(citizen_data)
         new_cit = cits.find_one({'_id': ObjectId(new_id)})
         form.populate_obj(cit)
+        result = cits.delete_one({'_id': ObjectId(id_)})
         return redirect(url_for('citizen_edit', id_=new_cit['_id']))
     form = CitizenForm(obj=cit)
     return render_template('citizen_edit.html', id_=id_, form=form)
@@ -178,6 +186,7 @@ def citizen_edit(id_):
 def cit_detail(id):
     cits = mydb.people
     cit = cits.find_one({'_id': ObjectId(id)})
+
     # with open('log.txt', 'a') as f:
     #     f.write(id)
 
@@ -200,7 +209,7 @@ def cit_detail(id):
                    f"17. Особенности диеты и т.п.: {cit['diet']}\n" \
                    f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
                    f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
-    log(str(cit))
+    # log(str(cit))
     _id = ObjectId(cit['_id'])
     return render_template('cit_detail.html', pers_info=text_to_send, _id=_id)
 

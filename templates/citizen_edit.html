@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  edit citizen
+{% endblock %}
+
+{% block content_title %}
+  edit
+{% endblock %}
+
+{% block content %}
+
+<div class="col-md-6">
+  <form  action="{{url_for('citizen_edit', id_=id_)}}" method="POST">
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label(class='control-label') }}
+        {{ field(class='form-control') }}
+
+      </div>
+    {% endfor %}
+    <button type="submit" class='btn btn-success'> Сохранить </button>
+  </form>
+</div>
+
+
+{% endblock %}
