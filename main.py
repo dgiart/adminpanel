@@ -1,4 +1,5 @@
 from app import app
+#14.49, 05/08
 import view
 # from time import time, asctime
 # from flask import render_template
