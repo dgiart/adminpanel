@@ -219,7 +219,7 @@ def cit_detail(id):
 
 @app.route('/showall')
 def showall():
-    mycol = mydb["people"]
+    mycol = mydb[table_name
     # mycol = mydb["people"]
     # log('Full unformation row 149')
     cit = []
