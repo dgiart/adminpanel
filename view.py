@@ -9,6 +9,7 @@ from forms import CitizenForm
 from datetime import datetime
 from app import mydb
 from models import Cit
+table_name = "people_new17_08"
 from my_funcs import log
 import csv
 citizen_data = {'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
@@ -22,7 +23,7 @@ citizen_data_list = ['fio', 'phone', 'birth', 'addr', 'people_num', 'people_fio'
 
 
 def write_to_base(citizenDataToDb):
-    mycol = mydb["people"]
+    mycol = mydb[table_name]
     try:
         pers = mycol.insert_one(citizenDataToDb)
         # pers.inserted_id
