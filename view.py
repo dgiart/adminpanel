@@ -1,5 +1,5 @@
 from app import app
-# 16.59
+# 16.47, 20/09
 from time import time, asctime
 from bson.objectid import ObjectId
 from flask import render_template, request, redirect, url_for
@@ -12,10 +12,11 @@ from models import Cit
 table_name = "people_new17_08"
 from my_funcs import log
 import csv
-citizen_data = {'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
-                'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
-                'products_detail': '', 'gigien': '', 'gigien_num': '', 'pampers': '', 'diet': '',
-                'pers_data_agreement': '', 'photo_agreement': ''}
+citizen_data = {'fio': {'family': '', 'name': '', 'paternal': ''}, 'phone': '', 'birth': '', 'addr': {'city': '',
+                             'distr': '', 'street': '', 'house': '', 'apartment': ''}, 'people_num': '',
+                             'people_fio': '', 'invalids': '', 'children': '', 'children_age': '', 'food': '',
+                             'diet': '', 'water': '', 'drugs': '', 'drugs_detail': '', 'gigien': '', 'gigien_detail': '',
+                             'pampers': '', 'pampers_detail': '', 'pers_data_agreement': '', 'photo_agreement': ''}
 citizen_data_list = ['fio', 'phone', 'birth', 'addr', 'people_num', 'people_fio', 'invalids', 'children',
                      'children_age', 'food', 'drugs', 'water', 'products_detail', 'gigien', 'gigien_num', 'pampers',
                      'diet', 'pers_data_agreement', 'photo_agreement']
@@ -46,12 +47,45 @@ def write_to_csv(citizenDataToCSV):
 @app.route('/create', methods=['POST', 'GET'])
 def citizen_create():
     if request.method == 'POST':
-        citizen_data['fio'] = request.form['fio']
+        #get FIO
+        family = request.form['family']
+        name = request.form['name']
+        paternal = request.form['paternal']
+        fio = {'family': family, 'name': name, 'paternal': paternal}
+        #end get FIO
+        citizen_data['fio'] = fio
         citizen_data['phone'] = request.form['phone']
         citizen_data['birth'] = request.form['birth']
         birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
         bith_year = birth_date.year
         citizen_data['birth_year'] = bith_year
+        #get ADDR
+        city = request.form['city']
+        distr = request.form['city']
+        street = request.form['street']
+        house = request.form['house']
+        apartment = request.form['apartment']
+        addr = {'city': city, 'distr': distr, 'street': street, 'house': house, 'apartment': apartment}
+        citizen_data['addr'] = addr
+        #end get ADDR
+        citizen_data['people_num'] = request.form['people_num']
+        citizen_data['people_fio'] = request.form['people_fio']
+        citizen_data['invalids'] = request.form['invalids']
+        citizen_data['children'] = request.form['children']
+        citizen_data['children_age'] = request.form['children_age']
+        citizen_data['food'] = request.form['food']
+        citizen_data['diet'] = request.form['diet']
+        citizen_data['water'] = request.form['water']
+        citizen_data['drugs'] = request.form['drugs']
+        citizen_data['drugs_detail'] = request.form['drugs_detail']
+        citizen_data['gigien'] = request.form['gigien']
+        citizen_data['gigien_detail'] = request.form['gigien_detail']
+        citizen_data['pampers'] = request.form['pampers']
+        citizen_data['pampers_detail'] = request.form['pampers_detail']
+        citizen_data['pers_data_agreement'] = request.form['pers_data_agreement']
+        citizen_data['photo_agreement'] = request.form['photo_agreement']
+
+
 
         # 'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '', 'people_fio': '',
         #                 'invalids': '', 'children': '', 'children_age': '', 'food': '', 'drugs': '', 'water': '',
@@ -62,7 +96,7 @@ def citizen_create():
         # try:
         #     pass
         write_to_base(citizen_data)
-        write_to_csv([citizen_data])
+        # write_to_csv([citizen_data])
         return redirect(url_for('showall'))
 
     form = CitizenForm()
@@ -145,7 +179,7 @@ def bot():
 
 @app.route('/<id_>/delete/', methods=['POST', 'GET'])
 def citizen_delete(id_):
-    cits = mydb.people
+    cits = mydb.people_new17_08
     cits.delete_one({'_id': ObjectId(id_)})
     return redirect(url_for('showall'))
 
@@ -153,19 +187,20 @@ def citizen_delete(id_):
 
 @app.route('/<id_>/edit/', methods=['POST', 'GET'])
 def citizen_edit(id_):
-    cits = mydb.people
+    cits = mydb.people_new17_08
     cit_ = cits.find_one({'_id': ObjectId(id_)})
-    cit = Cit(cit_['fio'], cit_['phone'], cit_['birth'])
+    cit = Cit(cit_['fio']['family'], cit_['phone'], cit_['birth'])
     if request.method == 'POST':
+        log('194')
         # form = CitizenForm(obj=cit)
         form = CitizenForm(formdata=request.form, obj=cit)
-        cit.fio = request.form['fio']
+        cit.fio = request.form['family']
         cit.phone = request.form['phone']
         cit.birth = request.form['birth']
         birth_date = datetime.strptime(cit_['birth'], '%d.%m.%Y')
         bith_year = birth_date.year
         cit.birth_year = bith_year
-        citizen_data['fio'] = request.form['fio']
+        citizen_data['fio']['family'] = request.form['family']
         citizen_data['phone'] = request.form['phone']
         citizen_data['birth'] = request.form['birth']
         birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
@@ -176,6 +211,7 @@ def citizen_edit(id_):
         #     f.write(str(cit.fio))
         new_id = write_to_base(citizen_data)
         new_cit = cits.find_one({'_id': ObjectId(new_id)})
+        log(str(new_id) + ' line214')
         form.populate_obj(cit)
         result = cits.delete_one({'_id': ObjectId(id_)})
         return redirect(url_for('citizen_edit', id_=new_cit['_id']))
@@ -185,31 +221,31 @@ def citizen_edit(id_):
 
 @app.route('/<id>')
 def cit_detail(id):
-    cits = mydb.people
+    cits = mydb.people_new17_08
+    # cits = mydb.people
     cit = cits.find_one({'_id': ObjectId(id)})
 
     # with open('log.txt', 'a') as f:
     #     f.write(id)
 
-    text_to_send = f"1. ФИО: {cit['fio']}\n" \
-                   f"2. Телефон: {cit['phone']}\n" \
-                   f"3. Датa рождения: {cit['birth']}\n" \
-                   f"4. Адрес: {cit['addr']}\n" \
-                   f"5. Число проживающих: {cit['people_num']}\n" \
-                   f"6. ФИО и возраст проживающих: {cit['people_fio']}\n" \
-                   f"7. Есть ли среди проживающих инвалиды? {cit['invalids']}\n" \
-                   f"8. Наличие детей: {cit['children']}\n" \
-                   f"9. Возраст детей: {cit['children_age']}\n" \
-                   f"10. Небходимость продуктов питания: {cit['food']}\n" \
-                   f"11. Воды: {cit['water']}\n" \
-                   f"12. Лекарств: {cit['drugs']}\n" \
-                   f"13. Kоличество: {cit['products_detail']}\n" \
-                   f"14. Средства личной гигиены: {cit['gigien']}\n" \
-                   f"15. Kоличество {cit['gigien_num']}\n" \
-                   f"16. Памперсы: {cit['pampers']}\n" \
-                   f"17. Особенности диеты и т.п.: {cit['diet']}\n" \
-                   f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
-                   f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
+    text_to_send = [f"1. ФИО: {cit['fio']['family']} {cit['fio']['name']} {cit['fio']['paternal']}\n",
+                   f"2. Телефон: {cit['phone']}\n",
+                   f"3. Датa рождения: {cit['birth']}\n",
+                   f"4. Адрес: {cit['addr']}\n",
+                   f"5. Число проживающих: {cit['people_num']}\n",
+                   f"6. ФИО и возраст проживающих: {cit['people_fio']}\n",
+                   f"7. Есть ли среди проживающих инвалиды? {cit['invalids']}\n",
+                   f"8. Наличие детей: {cit['children']}\n",
+                   f"9. Возраст детей: {cit['children_age']}\n",
+                   f"10. Небходимость продуктов питания: {cit['food']}\n",
+                   f"11. Воды: {cit['water']}\n",
+                   f"12. Лекарств: {cit['drugs']}\n",
+                   f"14. Средства личной гигиены: {cit['gigien']}\n",
+                   f"15. Kоличество {cit['gigien_detail']}\n",
+                   f"16. Памперсы: {cit['pampers']}\n",
+                   f"17. Особенности диеты и т.п.: {cit['diet']}\n",
+                   f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n",
+                   f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"]
     # log(str(cit))
     _id = ObjectId(cit['_id'])
     return render_template('cit_detail.html', pers_info=text_to_send, _id=_id)
@@ -226,7 +262,7 @@ def showall():
     text_to_send = ''
     row_num = 1
     for x in mycol.find():
-        pers = f"ФИО: {x['fio']} , дата рождения: {x['birth']}"
+        pers = f"Фамилия: {x['fio']['family']} , Имя: {x['fio']['name']}, Отчество: {x['fio']['paternal']}, дата рождения: {x['birth']}"
         cit.append(pers)
     #
 

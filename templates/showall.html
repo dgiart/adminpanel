@@ -5,7 +5,7 @@
     {% for el in cit %}
 
       <p>
-          ФИО: <a href="{{url_for('cit_detail', id=el['_id'])}}">{{ el['fio'] }}</a>, Дата рождения: {{ el['birth'] }}.
+          Фамилия: <a href="{{url_for('cit_detail', id=el['_id'])}}">{{ el['fio']['family'] }}</a>, Имя: {{ el['fio']['name'] }}, Отчество: {{ el['fio']['paternal'] }}, Дата рождения: {{ el['birth'] }}.
       </p>
 
 
