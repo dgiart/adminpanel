@@ -5,9 +5,10 @@
 
 
 {% block content %}
-
-{{pers_info}}
-
+{% for el in pers_info %}
+    {{ el }}
+<br>
+{% endfor %}
 <p>
 
 </p>

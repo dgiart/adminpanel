@@ -56,12 +56,15 @@ def citizen_create():
         citizen_data['fio'] = fio
         citizen_data['phone'] = request.form['phone']
         citizen_data['birth'] = request.form['birth']
+
+        log(str(citizen_data['birth']))
+        # birth_date = datetime.strptime(citizen_data['birth'], '%Y-%m-%d')
         birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
         bith_year = birth_date.year
         citizen_data['birth_year'] = bith_year
         #get ADDR
         city = request.form['city']
-        distr = request.form['city']
+        distr = request.form['distr']
         street = request.form['street']
         house = request.form['house']
         apartment = request.form['apartment']
@@ -191,31 +194,44 @@ def citizen_edit(id_):
     cit_ = cits.find_one({'_id': ObjectId(id_)})
     cit = Cit(cit_['fio']['family'], cit_['phone'], cit_['birth'])
     if request.method == 'POST':
-        log('194')
+        # log('194')
         # form = CitizenForm(obj=cit)
         form = CitizenForm(formdata=request.form, obj=cit)
-        cit.fio = request.form['family']
-        cit.phone = request.form['phone']
-        cit.birth = request.form['birth']
-        birth_date = datetime.strptime(cit_['birth'], '%d.%m.%Y')
-        bith_year = birth_date.year
-        cit.birth_year = bith_year
-        citizen_data['fio']['family'] = request.form['family']
-        citizen_data['phone'] = request.form['phone']
-        citizen_data['birth'] = request.form['birth']
-        birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
+        family = request.form['family']
+        name = request.form['name']
+        distr = request.form['distr']
+        myquery = cits.find_one({'_id': ObjectId(id_)})
+        newvalues = {"$set": {"fio.family": family, "fio.name": name, "addr.distr": distr}}
+        # log('line 200\n')
+        # log(str(myquery))
+        cits.update_one(myquery, newvalues)
+        # cit.fio = request.form['family']
+        # cit.phone = request.form['phone']
+        # cit.birth = request.form['birth']
+        # birth_date = datetime.strptime(cit_['birth'], '%d.%m.%Y')
         # bith_year = birth_date.year
-        citizen_data['birth_year'] = bith_year
+        # cit.birth_year = bith_year
+        # citizen_data['fio']['family'] = request.form['family']
+        # citizen_data['phone'] = request.form['phone']
+        # citizen_data['birth'] = request.form['birth']
+        # birth_date = datetime.strptime(citizen_data['birth'], '%d.%m.%Y')
+        # # bith_year = birth_date.year
+        # citizen_data['birth_year'] = bith_year
+        #
+        # # with open('log.txt', 'a') as f:
+        # #     f.write(str(cit.fio))
+        # # log(str(citizen_data))
+        # # log(str(write_to_base(citizen_data)) + 'line213')
+        # new_id = write_to_base(citizen_data)
+        # new_cit = cits.find_one({'_id': ObjectId(new_id)})
+        # log(str(new_id) + ' line216')
+        # form.populate_obj(cit)
+        # # result = cits.delete_one({'_id': ObjectId(id_)})
+        # return redirect(url_for('citizen_edit', id_=new_cit['_id']))
 
-        # with open('log.txt', 'a') as f:
-        #     f.write(str(cit.fio))
-        new_id = write_to_base(citizen_data)
-        new_cit = cits.find_one({'_id': ObjectId(new_id)})
-        log(str(new_id) + ' line214')
-        form.populate_obj(cit)
-        result = cits.delete_one({'_id': ObjectId(id_)})
-        return redirect(url_for('citizen_edit', id_=new_cit['_id']))
+        return redirect(url_for('showall'))
     form = CitizenForm(obj=cit)
+    # return redirect(url_for('showall'))
     return render_template('citizen_edit.html', id_=id_, form=form)
 
 
