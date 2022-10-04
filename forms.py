@@ -15,7 +15,7 @@ class CitizenForm(Form):
     name = StringField('Имя')
     paternal = StringField('Отчество')
     phone = StringField('Телефон')
-    birth = StringField('Дата рождения?')
+    birth = StringField('Дата рождения')
     # birth = DateField('Дата рождения?', format='%Y-%m-%d')
     # addr = StringField('Адресс')
     city = StringField('Город')
