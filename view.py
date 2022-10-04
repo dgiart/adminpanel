@@ -117,7 +117,7 @@ def name_search():
     if q:
         person = q
         cits = mydb.people
-        cit = cits.find_one({'fio': person})
+        cit = cits.find_one({'fio.family': person})
         text_to_send = f"1. ФИО: {cit['fio']}\n" \
                        f"2. Телефон: {cit['phone']}\n" \
                        f"3. Датa рождения: {cit['birth']}\n" \
