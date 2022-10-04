@@ -1,5 +1,5 @@
 from app import app
-#17.10, 03/10
+#17.10, 04/10
 import view
 # from time import time, asctime
 # from flask import render_template
