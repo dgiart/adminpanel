@@ -118,25 +118,25 @@ def name_search():
         person = q
         cits = mydb.people
         cit = cits.find_one({'fio.family': person})
-        text_to_send = f"1. ФИО: {cit['fio']}\n" \
-                       f"2. Телефон: {cit['phone']}\n" \
-                       f"3. Датa рождения: {cit['birth']}\n" \
-                       f"4. Адрес: {cit['addr']}\n" \
-                       f"5. Число проживающих: {cit['people_num']}\n" \
-                       f"6. ФИО и возраст проживающих: {cit['people_fio']}\n" \
-                       f"7. Есть ли среди проживающих инвалиды? {cit['invalids']}\n" \
-                       f"8. Наличие детей: {cit['children']}\n" \
-                       f"9. Возраст детей: {cit['children_age']}\n" \
-                       f"10. Небходимость продуктов питания: {cit['food']}\n" \
-                       f"11. Воды: {cit['water']}\n" \
-                       f"12. Лекарств: {cit['drugs']}\n" \
-                       f"13. Kоличество: {cit['products_detail']}\n" \
-                       f"14. Средства личной гигиены: {cit['gigien']}\n" \
-                       f"15. Kоличество {cit['gigien_num']}\n" \
-                       f"16. Памперсы: {cit['pampers']}\n" \
-                       f"17. Особенности диеты и т.п.: {cit['diet']}\n" \
-                       f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
-                       f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
+        text_to_send = f"1. ФИО: {cit['fio.family']}\n"
+                       # f"2. Телефон: {cit['phone']}\n" \
+                       # f"3. Датa рождения: {cit['birth']}\n" \
+                       # f"4. Адрес: {cit['addr']}\n" \
+                       # f"5. Число проживающих: {cit['people_num']}\n" \
+                       # f"6. ФИО и возраст проживающих: {cit['people_fio']}\n" \
+                       # f"7. Есть ли среди проживающих инвалиды? {cit['invalids']}\n" \
+                       # f"8. Наличие детей: {cit['children']}\n" \
+                       # f"9. Возраст детей: {cit['children_age']}\n" \
+                       # f"10. Небходимость продуктов питания: {cit['food']}\n" \
+                       # f"11. Воды: {cit['water']}\n" \
+                       # f"12. Лекарств: {cit['drugs']}\n" \
+                       # f"13. Kоличество: {cit['products_detail']}\n" \
+                       # f"14. Средства личной гигиены: {cit['gigien']}\n" \
+                       # f"15. Kоличество {cit['gigien_num']}\n" \
+                       # f"16. Памперсы: {cit['pampers']}\n" \
+                       # f"17. Особенности диеты и т.п.: {cit['diet']}\n" \
+                       # f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
+                       # f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
     return render_template('name_search.html', pers_info=text_to_send)
 
 
