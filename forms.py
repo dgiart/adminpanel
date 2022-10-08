@@ -11,7 +11,7 @@ citizen_data = {'fio': '', 'phone': '', 'birth': '', 'addr': '', 'people_num': '
 
 class CitizenForm(Form):
     # fio = StringField('ФИО')
-    family = StringField('Фамилия', validators=[InputRequired()])
+    family = StringField('Фамилия')#, validators=[InputRequired()])
     name = StringField('Имя')
     paternal = StringField('Отчество')
     phone = StringField('Телефон')
