@@ -202,8 +202,8 @@ def citizen_edit(id_):
         #get data from form
         # get fio
         family = request.form['family']
-        # if not family:
-        #     family = cit_['fio']['family']
+        if not family:
+            family = cit_['fio']['family']
         name = request.form['name']
         paternal = request.form['paternal']
         #get phone
