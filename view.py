@@ -1,5 +1,5 @@
 from app import app
-# 16.47, 20/09
+# 16.28, 08/10
 from time import time, asctime
 from bson.objectid import ObjectId
 from flask import render_template, request, redirect, url_for
