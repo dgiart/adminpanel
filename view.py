@@ -208,10 +208,10 @@ def citizen_edit(id_):
         city = request.form['city']
         distr = request.form['distr']
         street = request.form['street']
-        home = request.form['home']
+        house = request.form['house']
         apartment = request.form['apartment']
         myquery = cits.find_one({'_id': ObjectId(id_)})
-        newvalues = {"$set": {"fio.family": family, "fio.name": name, "fio.paternal": paternal, "addr.city": city, "addr.distr": distr, "addr.street": street, "addr.home": home, "addr.apartment": apartment}}
+        newvalues = {"$set": {"fio.family": family, "fio.name": name, "fio.paternal": paternal, "addr.city": city, "addr.distr": distr, "addr.street": street, "addr.house": house, "addr.apartment": apartment}}
         # log('line 200\n')
         # log(str(myquery))
         cits.update_one(myquery, newvalues)
