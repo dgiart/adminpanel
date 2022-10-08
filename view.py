@@ -114,12 +114,14 @@ def downloadFile ():
 def name_search():
     q = request.args.get('q')
     text_to_send = ''
+    # log(q)
     if q:
         person = q
-        cits = mydb.people
+        cits = mydb.people_new17_08
+        log(person)
         cit = cits.find_one({'fio.family': person})
-        text_to_send = f"1. ФИО: {cit['fio.family']}\n"
-                       # f"2. Телефон: {cit['phone']}\n" \
+        text_to_send = f"1. ФИО: {cit['fio']['family']}\n"\
+                       f"2. Телефон: {cit['phone']}\n"
                        # f"3. Датa рождения: {cit['birth']}\n" \
                        # f"4. Адрес: {cit['addr']}\n" \
                        # f"5. Число проживающих: {cit['people_num']}\n" \
@@ -197,11 +199,19 @@ def citizen_edit(id_):
         # log('194')
         # form = CitizenForm(obj=cit)
         form = CitizenForm(formdata=request.form, obj=cit)
+        #get data from form
+        # get fio
         family = request.form['family']
         name = request.form['name']
+        paternal = request.form['paternal']
+        # get adress
+        city = request.form['city']
         distr = request.form['distr']
+        street = request.form['street']
+        home = request.form['home']
+        apartment = request.form['apartment']
         myquery = cits.find_one({'_id': ObjectId(id_)})
-        newvalues = {"$set": {"fio.family": family, "fio.name": name, "addr.distr": distr}}
+        newvalues = {"$set": {"fio.family": family, "fio.name": name, "fio.paternal": paternal, "addr.city": city, "addr.distr": distr, "addr.street": street, "addr.home": home, "addr.apartment": apartment}}
         # log('line 200\n')
         # log(str(myquery))
         cits.update_one(myquery, newvalues)
