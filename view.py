@@ -276,7 +276,7 @@ def cit_detail(id):
                    f"14. Средства личной гигиены: {cit['gigien']}\n",
                    f"15. Kоличество {cit['gigien_detail']}\n",
                    f"16. Памперсы: {cit['pampers']}\n",
-                   f"17. Особенности диеты и т.п.: {cit['diet']}\n",
+                   f"17. Особенности диеты: {cit['diet']}\n",
                    f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n",
                    f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"]
     # log(str(cit))
