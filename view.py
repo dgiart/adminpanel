@@ -264,7 +264,7 @@ def cit_detail(id):
     text_to_send = [f"1. ФИО: {cit['fio']['family']} {cit['fio']['name']} {cit['fio']['paternal']}\n",
                    f"2. Телефон: {cit['phone']}\n",
                    f"3. Датa рождения: {cit['birth']}\n",
-                   f"4. Адрес: город: {cit['addr']['city']}, район: {cit['addr']['distr']}\n",
+                   f"4. Адрес: город: {cit['addr']['city']}, район: {cit['addr']['distr']}, улица: {cit['addr']['street']}, дом: {cit['addr']['house']}, квартира: {cit['addr']['apartment']}\n",
                    f"5. Число проживающих: {cit['people_num']}\n",
                    f"6. ФИО и возраст проживающих: {cit['people_fio']}\n",
                    f"7. Есть ли среди проживающих инвалиды? {cit['invalids']}\n",
