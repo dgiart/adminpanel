@@ -194,7 +194,7 @@ def citizen_delete(id_):
 def citizen_edit(id_):
     cits = mydb.people_new17_08
     cit_ = cits.find_one({'_id': ObjectId(id_)})
-    cit = Cit(cit_['fio']['family'], cit_['phone'], cit_['birth'])
+    cit = Cit(cit_['fio']['family'], cit_['phone'], cit_['birth'], cit_['people_fio'])
     if request.method == 'POST':
         # log('194')
         # form = CitizenForm(obj=cit)
@@ -216,9 +216,10 @@ def citizen_edit(id_):
         street = request.form['street']
         house = request.form['house']
         apartment = request.form['apartment']
+        people_fio = request.form['people_fio']
         #change values
         myquery = cits.find_one({'_id': ObjectId(id_)})
-        newvalues = {"$set": {"fio.family": family, "fio.name": name, "fio.paternal": paternal, "phone": phone, "birth": birth, "addr.city": city, "addr.distr": distr, "addr.street": street, "addr.house": house, "addr.apartment": apartment}}
+        newvalues = {"$set": {"fio.family": family, "fio.name": name, "fio.paternal": paternal, "phone": phone, "birth": birth, "addr.city": city, "addr.distr": distr, "addr.street": street, "addr.house": house, "addr.apartment": apartment, "people_fio": people_fio}}
         # log('line 200\n')
         # log(str(myquery))
         cits.update_one(myquery, newvalues)
