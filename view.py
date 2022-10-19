@@ -110,6 +110,20 @@ def downloadFile ():
     #For windows you need to use drive name [ex: F:/Example.pdf]
     path = "citizens.csv"
     return send_file(path, as_attachment=True)
+
+@app.route('/street_search')
+def street_search():
+    q = request.args.get('q')
+    text_to_send = ''
+    if q:
+        street = q
+        cits = mydb.people_new17_08
+        cit = cits.find_one({'addr.street': street})
+        text_to_send = f"1. ФИО: {cit['fio']['family']}\n" \
+                       f"2. Телефон: {cit['phone']}\n"
+    return render_template('street_search.html', pers_info=text_to_send)
+
+
 @app.route('/name_search')
 def name_search():
     q = request.args.get('q')
