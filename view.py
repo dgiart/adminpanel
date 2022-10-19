@@ -2,6 +2,7 @@ from app import app
 # 16.28, 08/10
 from time import time, asctime
 from bson.objectid import ObjectId
+import re
 from flask import render_template, request, redirect, url_for
 from flask import send_file
 # import pymongo
@@ -12,6 +13,7 @@ from models import Cit
 table_name = "people_new17_08"
 from my_funcs import log
 import csv
+count = 0
 citizen_data = {'fio': {'family': '', 'name': '', 'paternal': ''}, 'phone': '', 'birth': '', 'addr': {'city': '',
                              'distr': '', 'street': '', 'house': '', 'apartment': ''}, 'people_num': '',
                              'people_fio': '', 'invalids': '', 'children': '', 'children_age': '', 'food': '',
@@ -129,16 +131,29 @@ def street_search():
 
 @app.route('/name_search')
 def name_search():
+    global count
     q = request.args.get('q')
     text_to_send = ''
-    # log(q)
+    log(str(q))
+    log('line138')
     if q:
+        count += 1
         person = q
         cits = mydb.people_new17_08
-        log(person)
-        cit = cits.find_one({'fio.family': person})
+        # log(person)
+        # cit = cits.find_one({'fio.family': person})
+        cit = cits.find({'fio.family': re.compile('^' + re.escape(person) + '$', re.IGNORECASE)})
+        # cits_with_name = cits.find({'fio.family': re.compile('^' + re.escape(person) + '$', re.IGNORECASE)})
+        # cit_list = list(cits_with_name)
+        log(str(count))
+        # log(str(len(cit_list) + 1))
+        # for el in cit_list:
+        #     log(str(el))
+        #     log('\n')
+
+
         if cit:
-            text_to_send = f"1. ФИО: {cit['fio']['family']}\n"\
+            text_to_send = f"1. Фамилия: {cit['fio']['family']}, \n"\
                            f"2. Телефон: {cit['phone']}\n"
                            # f"3. Датa рождения: {cit['birth']}\n" \
                            # f"4. Адрес: {cit['addr']}\n" \
@@ -158,7 +173,7 @@ def name_search():
                            # f"18. Cогласие на обработку персональных данных: {cit['pers_data_agreement']} \n" \
                            # f"19. Cогласие на фото/видео: {cit['photo_agreement']}\n"
         else:
-            text_to_send = 'Нет человека с такой фамилией'
+            text_to_send = 'Нет человека с такой фамилией!'
     return render_template('name_search.html', pers_info=text_to_send)
 
 
@@ -309,6 +324,8 @@ def cit_detail(id):
 
 @app.route('/showall')
 def showall():
+    global count
+    count += 1
     mycol = mydb[table_name]
     # mycol = mydb["people"]
     # log('Full unformation row 149')
@@ -319,6 +336,6 @@ def showall():
         pers = f"Фамилия: {x['fio']['family']} , Имя: {x['fio']['name']}, Отчество: {x['fio']['paternal']}, дата рождения: {x['birth']}"
         cit.append(pers)
     #
-
+    log(str(count))
     return render_template('showall.html', cit=mycol.find())
     # return render_template('showall.html', cit=cit)
