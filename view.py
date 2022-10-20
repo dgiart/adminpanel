@@ -116,19 +116,22 @@ def downloadFile ():
 @app.route('/street_search')
 def street_search():
     q = request.args.get('q')
-    text_to_send = ''
+    text_to_send = []
     if q:
         street = q
         cits = mydb.people_new17_08
         cits_with_street = cits.find({'addr.street': re.compile('^' + re.escape(street) + '$', re.IGNORECASE)})
         cit_list = list(cits_with_street)
 
-        if cit_list:
-            text_to_send = []
-            for cit in cit_list:
-                text_to_send.append(cit)
-        else:
-            text_to_send = 'Нет людей с этой улицы'
+        # if len(cit_list) > 0:
+
+            # for cit in cit_list:
+            #     text_to_send.append(cit)
+        # else:
+        #     return 'Нет людей с этой улицы'
+
+        for cit in cit_list:
+            text_to_send.append(cit)
     return render_template('street_search.html', pers_info=text_to_send)
 
 
