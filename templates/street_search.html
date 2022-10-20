@@ -14,7 +14,7 @@
     Введите название улицы.
 </p>
 
-{% if pers_info|length>1 %}
+{% if pers_info|length>0 %}
 {% for el in pers_info %}
 Фамилия: <a href="{{url_for('cit_detail', id=el['_id'])}}">{{ el['fio']['family'] }}</a>, Имя: {{ el['fio']['name'] }}, Отчество: {{ el['fio']['paternal'] }}, Дата рождения: {{ el['birth'] }},  Телефон: {{ el['phone'] }},  Улица: {{ el['addr']['street'] }}.
 
