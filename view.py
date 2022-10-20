@@ -120,10 +120,13 @@ def street_search():
     if q:
         street = q
         cits = mydb.people_new17_08
-        cit = cits.find_one({'addr.street': street})
-        if cit:
-            text_to_send = f"1. ФИО: {cit['fio']['family']}\n" \
-                           f"2. Телефон: {cit['phone']}\n"
+        cits_with_street = cits.find({'addr.street': re.compile('^' + re.escape(street) + '$', re.IGNORECASE)})
+        cit_list = list(cits_with_street)
+
+        if cit_list:
+            text_to_send = []
+            for cit in cit_list:
+                text_to_send.append(cit)
         else:
             text_to_send = 'Нет людей с этой улицы'
     return render_template('street_search.html', pers_info=text_to_send)
@@ -140,21 +143,22 @@ def name_search():
         count += 1
         person = q
         cits = mydb.people_new17_08
-        # log(person)
-        # cit = cits.find_one({'fio.family': person})
-        cit = cits.find({'fio.family': re.compile('^' + re.escape(person) + '$', re.IGNORECASE)})
-        # cits_with_name = cits.find({'fio.family': re.compile('^' + re.escape(person) + '$', re.IGNORECASE)})
-        # cit_list = list(cits_with_name)
-        log(str(count))
+        cits_with_name = cits.find({'fio.family': re.compile('^' + re.escape(person) + '$', re.IGNORECASE)})
+        cit_list = list(cits_with_name)
+        # log(str(count))
         # log(str(len(cit_list) + 1))
         # for el in cit_list:
         #     log(str(el))
         #     log('\n')
 
 
-        if cit:
-            text_to_send = f"1. Фамилия: {cit['fio']['family']}, \n"\
-                           f"2. Телефон: {cit['phone']}\n"
+        if cit_list:
+            text_to_send = []
+            for cit in cit_list:
+                text_to_send.append(cit)
+                # text_to_send.append('Фамилия: ' + cit['fio']['family'])
+            # text_to_send = f"1. Фамилия: {cit['fio']['family']}, \n"\
+            #                f"2. Телефон: {cit['phone']}\n"
                            # f"3. Датa рождения: {cit['birth']}\n" \
                            # f"4. Адрес: {cit['addr']}\n" \
                            # f"5. Число проживающих: {cit['people_num']}\n" \

@@ -13,8 +13,12 @@
 <p>
     Введите название улицы.
 </p>
-{{pers_info}}
 
 
+{% for el in pers_info %}
+Фамилия: <a href="{{url_for('cit_detail', id=el['_id'])}}">{{ el['fio']['family'] }}</a>, Имя: {{ el['fio']['name'] }}, Отчество: {{ el['fio']['paternal'] }}, Дата рождения: {{ el['birth'] }},  Телефон: {{ el['phone'] }},  Улица: {{ el['addr']['street'] }}.
+
+<p>
+{% endfor %}
 
 {% endblock %}
