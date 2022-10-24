@@ -20,8 +20,8 @@ citizen_data = {'fio': {'family': '', 'name': '', 'paternal': ''}, 'phone': '', 
                              'diet': '', 'water': '', 'drugs': '', 'drugs_detail': '', 'gigien': '', 'gigien_detail': '',
                              'pampers': '', 'pampers_detail': '', 'pers_data_agreement': '', 'photo_agreement': ''}
 citizen_data_list = ['fio', 'phone', 'birth', 'addr', 'people_num', 'people_fio', 'invalids', 'children',
-                     'children_age', 'food', 'drugs', 'water', 'products_detail', 'gigien', 'gigien_num', 'pampers',
-                     'diet', 'pers_data_agreement', 'photo_agreement']
+                     'children_age', 'food', 'diet', 'water', 'drugs', 'drugs_detail', 'gigien', 'gigien_detail', 'pampers',
+                     'pampers_detail', 'pers_data_agreement', 'photo_agreement', 'birth_year','_id']
 
 
 
@@ -42,7 +42,7 @@ def write_to_csv(citizenDataToCSV):
                     'products_detail', 'gigien', 'gigien_num', 'pampers', 'diet',
                     'pers_data_agreement', 'photo_agreement', 'birth_year', '_id']
     with open('citizens.csv', 'a') as file:
-        writer = csv.DictWriter(file, fieldnames=citizen_info)
+        writer = csv.DictWriter(file, fieldnames=citizen_data_list)
         writer.writeheader()
         writer.writerows(citizenDataToCSV)
 
@@ -101,17 +101,34 @@ def citizen_create():
         # try:
         #     pass
         write_to_base(citizen_data)
-        # write_to_csv([citizen_data])
+        write_to_csv([citizen_data])
         return redirect(url_for('showall'))
 
     form = CitizenForm()
     return render_template('citizen_create.html', form=form)
-
+@app.route('/wtf')
+def wtf():
+    log('wtf')
+    return 'wtf'
 @app.route('/download')
-def downloadFile ():
-    #For windows you need to use drive name [ex: F:/Example.pdf]
-    path = "citizens.csv"
-    return send_file(path, as_attachment=True)
+def downloadFile():
+    log('line111')
+    # mycol = mydb[table_name]
+    # cits = mycol.find()
+    # cits_list = []
+    # for cit in cits:
+    #     cits_list.append(cit)
+    #     print(str(x))
+    # path = "citizens++.csv"
+    # log(str(cits_list))
+    # with open(path, 'w') as file:
+    #     writer = csv.DictWriter(file, fieldnames=citizen_data_list)
+    #     writer.writeheader()
+    #     writer.writerows(cits_list)
+    # For windows you need to use drive name [ex: F:/Example.pdf]
+    # path = "citizens.csv"
+    return 'line127'
+    # return send_file(path, as_attachment=True)
 
 @app.route('/street_search')
 def street_search():
@@ -200,7 +217,8 @@ def birth_search():
             text_to_send = 'Неверный формат. Введите интервал лет в формате: \"год1 - год2\"'
         else:
             # log('line 226')
-            mycol = mydb["people"]
+            mycol = mydb[table_name]
+            # mycol = mydb["people"]
             people_in_range = mycol.find({"birth_year": {"$gt": start_year, "$lt": fin_year}})
             # if user_text == 'Информация по конкретному человеку':
             # log(str(people_in_range) + 'line 230')
@@ -332,6 +350,7 @@ def cit_detail(id):
 @app.route('/showall')
 def showall():
     global count
+    # log('SowAll')
     count += 1
     mycol = mydb[table_name]
     # mycol = mydb["people"]
