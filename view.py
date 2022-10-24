@@ -106,29 +106,22 @@ def citizen_create():
 
     form = CitizenForm()
     return render_template('citizen_create.html', form=form)
-@app.route('/wtf')
-def wtf():
-    log('wtf')
-    return 'wtf'
-@app.route('/download')
-def downloadFile():
-    log('line111')
-    # mycol = mydb[table_name]
-    # cits = mycol.find()
-    # cits_list = []
-    # for cit in cits:
-    #     cits_list.append(cit)
+@app.route('/download_file')
+def download_file():
+    log('line115')
+    mycol = mydb[table_name]
+    cits = mycol.find()
+    cits_list = []
+    for cit in cits:
+        cits_list.append(cit)
     #     print(str(x))
-    # path = "citizens++.csv"
+    download_path = "citizensdata.csv"
     # log(str(cits_list))
-    # with open(path, 'w') as file:
-    #     writer = csv.DictWriter(file, fieldnames=citizen_data_list)
-    #     writer.writeheader()
-    #     writer.writerows(cits_list)
-    # For windows you need to use drive name [ex: F:/Example.pdf]
-    # path = "citizens.csv"
-    return 'line127'
-    # return send_file(path, as_attachment=True)
+    with open(download_path, 'w') as file:
+        writer = csv.DictWriter(file, fieldnames=citizen_data_list)
+        writer.writeheader()
+        writer.writerows(cits_list)
+    return send_file('templates/' + download_path, as_attachment=True)
 
 @app.route('/street_search')
 def street_search():
@@ -157,8 +150,8 @@ def name_search():
     global count
     q = request.args.get('q')
     text_to_send = ''
-    log(str(q))
-    log('line138')
+    # log(str(q))
+    # log('line138')
     if q:
         count += 1
         person = q
