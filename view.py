@@ -122,7 +122,7 @@ def download_file():
         writer.writeheader()
         writer.writerows(cits_list)
 
-    return send_file('templates/' + download_path, as_attachment=True)#on server
+    return send_file(download_path, as_attachment=True)#on server
     # return send_file('templates/' + download_path, as_attachment=True) - local
 
 @app.route('/street_search')
