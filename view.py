@@ -121,7 +121,9 @@ def download_file():
         writer = csv.DictWriter(file, fieldnames=citizen_data_list)
         writer.writeheader()
         writer.writerows(cits_list)
-    return send_file('templates/' + download_path, as_attachment=True)
+
+    return send_file('templates/' + download_path, as_attachment=True)#on server
+    # return send_file('templates/' + download_path, as_attachment=True) - local
 
 @app.route('/street_search')
 def street_search():
