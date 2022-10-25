@@ -1,4 +1,5 @@
 from app import app
+import datetime
 # 20.20, 20/10
 from time import time, asctime
 from bson.objectid import ObjectId
@@ -108,22 +109,26 @@ def citizen_create():
     return render_template('citizen_create.html', form=form)
 @app.route('/download_file')
 def download_file():
-    log('line115')
+    log('line111')
     mycol = mydb[table_name]
     cits = mycol.find()
     cits_list = []
     for cit in cits:
         cits_list.append(cit)
     #     print(str(x))
-    download_path = "citizensdata.csv"
+    actual_time = str(datetime.now())
+    download_path = f"citizensdata{actual_time}.csv"
     # log(str(cits_list))
+    # for c in cits_list:
+    #     log(str(c)+'\n')
     with open(download_path, 'w') as file:
+        log(str(cits_list))
         writer = csv.DictWriter(file, fieldnames=citizen_data_list)
         writer.writeheader()
         writer.writerows(cits_list)
 
     return send_file(download_path, as_attachment=True)#on server
-    # return send_file('templates/' + download_path, as_attachment=True) - local
+    # return send_file('templates/' + download_path, as_attachment=True) # local
 
 @app.route('/street_search')
 def street_search():
