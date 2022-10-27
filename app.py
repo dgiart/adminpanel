@@ -4,6 +4,7 @@ from config import Configuration
 from time import time, asctime
 from flask_admin import Admin
 import pymongo
+from flask_pymongo import PyMongo
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 app = Flask(__name__)
