@@ -122,7 +122,7 @@ def download_file():
     # for c in cits_list:
     #     log(str(c)+'\n')
     with open(download_path, 'w') as file:
-        log(str(cits_list))
+        # log(str(cits_list))
         writer = csv.DictWriter(file, fieldnames=citizen_data_list)
         writer.writeheader()
         writer.writerows(cits_list)
